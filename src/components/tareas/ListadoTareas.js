@@ -1,8 +1,20 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
 import Tarea from './Tarea';
 
+import ProyectoContext from '../../context/proyectos/ProyectoContext';
+
 const ListadoTareas = () => {
+
+    // Extraer proyectos del state inicial
+    const proyectosContext = useContext(ProyectoContext);
+    const { proyecto, eliminarProyecto } = proyectosContext;
+
+    // si no hay proyectos seleccionado
+    if (!proyecto) return <h2>Selecciona un proyecto</h2>;
+
+    // Array destructuring para extraer el proyecto actual
+    const [proyectoActual] = proyecto;
 
     const tareasProyecto = [
         { nombre: 'Elegir Plataforma', estado: true },
@@ -13,7 +25,7 @@ const ListadoTareas = () => {
 
     return (
         <>
-            <h2>Proyeco: Tienda Virtual</h2>
+            <h2>Proyeco: {proyectoActual.nombre}</h2>
 
             <ul className="listado-tareas">
                 {tareasProyecto.length === 0 ?
@@ -35,6 +47,7 @@ const ListadoTareas = () => {
             <button
                 className="btn btn-eliminar"
                 type="button"
+                onClick={() => eliminarProyecto(proyectoActual.id)}
             >
                 Eliminar Proyecto &times;
             </button>

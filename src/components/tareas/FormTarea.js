@@ -1,13 +1,25 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import useForm from '../../hooks/useForm';
+
+import ProyectoContext from '../../context/proyectos/ProyectoContext';
 
 const FormTarea = () => {
 
+    // Extraer si un proyecto esta activo
+    const proyectosContext = useContext(ProyectoContext);
+    const { proyecto } = proyectosContext;
+
+    // Custom Hook del Formulario
     const [tarea, handleInputChange] = useForm({
         nombre: '',
     });
-
     const { nombre } = tarea;
+
+    // si no hay proyectos seleccionado
+    if (!proyecto) return null;
+
+    // Array destructuring para extraer el proyecto actual
+    const [proyectoActual] = proyecto;
 
     const handleSubmit = () => {
 
