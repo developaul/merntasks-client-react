@@ -8,9 +8,16 @@ const NuevoProyecto = () => {
 
     // State del Formulario
     const proyectosContext = useContext(ProyectoContext);
-    const { formulario, mostrarFormulario } = proyectosContext;
+    const {
+        formulario,
+        errorformulario,
+        mostrarFormulario,
+        agregarProyecto,
+        mostrarError
+    } = proyectosContext;
 
-    const [proyecto, handleInputChange] = useForm({
+    // Custom Hook del Formulario
+    const [proyecto, handleInputChange, handleInputReset] = useForm({
         nombre: ''
     });
 
@@ -20,11 +27,13 @@ const NuevoProyecto = () => {
         e.preventDefault();
 
         // Validar Proyecto
+        if (!nombre.trim()) return mostrarError();
 
-        // Agregar al State
+        // Agregar nuevo Proyecto
+        agregarProyecto(proyecto);
 
         // Reiniciar el Form
-
+        handleInputReset();
     };
 
     return (
@@ -58,8 +67,11 @@ const NuevoProyecto = () => {
                             value="Agregar Proyecto"
                         />
                     </form>
+
                 )
             }
+
+            { errorformulario && <p className="mensaje error">El nombre del Proyecto es obligatorio</p>}
         </>
     );
 };

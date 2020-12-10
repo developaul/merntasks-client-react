@@ -1,11 +1,15 @@
 import React, { useReducer } from 'react';
 
+import { v4 as uuidv4 } from 'uuid';
+
 import ProyectoContext from './ProyectoContext';
 import ProyectoReducer from './ProyectoReducer';
 
 import {
     FORMULARIO_PROYECTO,
-    OBTENER_PROYECTOS
+    OBTENER_PROYECTOS,
+    AGREGAR_PROYECTO,
+    VALIDAR_FORMULARIO
 } from '../../types';
 
 const ProyectoState = ({ children }) => {
@@ -17,34 +21,49 @@ const ProyectoState = ({ children }) => {
 
     const initialState = {
         proyectos: [],
-        formulario: false
+        formulario: false,
+        errorFormulario: false
     };
 
     // Dispatch para ejecutar las acciones
     const [state, dispatch] = useReducer(ProyectoReducer, initialState);
 
     // Serie de funciones para el CRUD
-    const mostrarFormulario = () => {
+    const mostrarFormulario = () => dispatch({
+        type: FORMULARIO_PROYECTO
+    });
+
+    // Obtener los proyectos
+    const obtenerProyectos = () => dispatch({
+        type: OBTENER_PROYECTOS,
+        payload: proyectos
+    });
+
+    // Agrega un nuevo proyecto
+    const agregarProyecto = proyecto => {
+        proyecto.id = uuidv4();
+
         dispatch({
-            type: FORMULARIO_PROYECTO
+            type: AGREGAR_PROYECTO,
+            payload: proyecto
         });
     };
 
-    // Obtener los proyectos
-    const obtenerProyectos = () => {
-        dispatch({
-            type: OBTENER_PROYECTOS,
-            payload: proyectos
-        });
-    };
+    // Validar formulario por errores
+    const mostrarError = () => dispatch({
+        type: VALIDAR_FORMULARIO
+    });
 
     return (
         <ProyectoContext.Provider
             value={{
                 proyectos: state.proyectos,
                 formulario: state.formulario,
+                errorformulario: state.errorFormulario,
                 mostrarFormulario,
-                obtenerProyectos
+                obtenerProyectos,
+                agregarProyecto,
+                mostrarError
             }}
         >
             {children}
