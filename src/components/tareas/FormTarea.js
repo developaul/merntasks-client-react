@@ -1,7 +1,11 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
+
+import { v4 as uuidv4 } from 'uuid';
+
 import useForm from '../../hooks/useForm';
 
 import ProyectoContext from '../../context/proyectos/ProyectoContext';
+import TareasContext from '../../context/tareas/TareaContext';
 
 const FormTarea = () => {
 
@@ -9,8 +13,24 @@ const FormTarea = () => {
     const proyectosContext = useContext(ProyectoContext);
     const { proyecto } = proyectosContext;
 
+    // Extraer función para agregar una nueva tarea
+    const tareasContext = useContext(TareasContext);
+    const { tareaseleccionada, errortarea, agregarTarea, obtenerTareas, validarTarea, actualizarTarea, limpiarTarea } = tareasContext;
+
+    // Effect detecta si hay una tarea seleccionada
+    useEffect(() => {
+
+        if (tareaseleccionada) {
+            handleState(tareaseleccionada);
+        } else {
+            handleState({ nombre: '' });
+        }
+
+        // eslint-disable-next-line
+    }, [tareaseleccionada]);
+
     // Custom Hook del Formulario
-    const [tarea, handleInputChange] = useForm({
+    const [tarea, handleInputChange, handleInputReset, handleState] = useForm({
         nombre: '',
     });
     const { nombre } = tarea;
@@ -21,8 +41,40 @@ const FormTarea = () => {
     // Array destructuring para extraer el proyecto actual
     const [proyectoActual] = proyecto;
 
-    const handleSubmit = () => {
+    const handleSubmit = e => {
+        e.preventDefault();
 
+        // Validar
+        if (!nombre.trim()) return validarTarea();
+
+        // Si es Edición o nueva tarea
+        if (tareaseleccionada) {
+
+            // Actualizar Tarea
+            actualizarTarea(tarea);
+
+            // Elimina la tarea seleccionada del state
+            limpiarTarea();
+
+        } else {
+
+            // Generando Nueva tarea
+            const nuevaTarea = {
+                nombre: nombre.trim(),
+                estado: false,
+                proyectoId: proyectoActual.id,
+                id: uuidv4()
+            };
+
+            // Agregar nueva tarea al proyecto actual
+            agregarTarea(nuevaTarea);
+        }
+
+        // Volver a filtrar las tareas del proyecto actual
+        obtenerTareas(proyectoActual.id);
+
+        // Reiniciar Form
+        handleInputReset();
     }
 
     return (
@@ -45,10 +97,12 @@ const FormTarea = () => {
                     <input
                         className="btn btn-primario btn-submit btn-block"
                         type="submit"
-                        value="Agregar Tarea"
+                        value={tareaseleccionada ? 'Editar Tarea' : 'Agregar Tarea'}
                     />
                 </div>
             </form>
+
+            {errortarea && <p className="mensaje error">El nombre de la tarea es obligatorio</p>}
         </div>
     );
 };

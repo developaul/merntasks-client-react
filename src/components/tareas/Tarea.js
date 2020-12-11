@@ -1,6 +1,32 @@
-import React from 'react';
+import React, { useContext } from 'react';
 
-const Tarea = ({ tarea: { nombre, estado } }) => {
+import TareasContext from '../../context/tareas/TareaContext';
+
+const Tarea = ({ tarea }) => {
+
+    const { nombre, estado, id, proyectoId } = tarea;
+
+    // Extraer función del context tarea
+    const tareasContext = useContext(TareasContext);
+    const { eliminarTarea, obtenerTareas, cambiarEstadoTarea, guardarTareaActual } = tareasContext;
+
+    // Elimina la tarea por su id
+    const tareaEliminar = id => {
+        eliminarTarea(id);
+        obtenerTareas(proyectoId);
+    };
+
+    // Modifica el estado de las tareas
+    const cambiarEstado = tarea => {
+        tarea.estado = !tarea.estado;
+        cambiarEstadoTarea(tarea);
+    };
+
+    // Agrega la tarea actual
+    const seleccionarTarea = tarea => {
+        guardarTareaActual(tarea);
+    };
+
     return (
         <li className="tarea sombra">
             <p>{nombre}</p>
@@ -11,6 +37,7 @@ const Tarea = ({ tarea: { nombre, estado } }) => {
                         <button
                             className="completo"
                             type="button"
+                            onClick={() => cambiarEstado(tarea)}
                         >
                             Completo
                         </button>
@@ -20,6 +47,7 @@ const Tarea = ({ tarea: { nombre, estado } }) => {
                         <button
                             className="incompleto"
                             type="button"
+                            onClick={() => cambiarEstado(tarea)}
                         >
                             Incompleto
                         </button>
@@ -31,6 +59,7 @@ const Tarea = ({ tarea: { nombre, estado } }) => {
                 <button
                     className="btn btn-primario"
                     type="button"
+                    onClick={() => seleccionarTarea(tarea)}
                 >
                     Editar
                 </button>
@@ -38,6 +67,7 @@ const Tarea = ({ tarea: { nombre, estado } }) => {
                 <button
                     className="btn btn-secundario"
                     type="button"
+                    onClick={() => tareaEliminar(id)}
                 >
                     Eliminar
                 </button>
