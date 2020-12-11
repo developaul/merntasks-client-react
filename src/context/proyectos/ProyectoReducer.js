@@ -14,13 +14,13 @@ const ProyectoReducer = (state, action) => {
             return {
                 ...state,
                 formulario: true
-            }
+            };
 
         case OBTENER_PROYECTOS:
             return {
                 ...state,
                 proyectos: action.payload
-            }
+            };
 
         case AGREGAR_PROYECTO:
             return {
